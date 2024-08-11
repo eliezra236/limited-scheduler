@@ -24,13 +24,13 @@ export class LimitedScheduler {
             return queue;
         }
         const lastQueue = this.queues.at(-1);
-        if (!lastQueue || lastQueue.isSettled()) {
+        if (!lastQueue) {
             const newQueue = new Queue(timeoutMsConfig);
             this.queues.push(newQueue);
             return newQueue;
         }
-
-        const timeDelta = Math.max(Date.now() - lastQueue.startTime, 0);
+        const timeLeftInQueue = timeoutMsConfig - (Date.now() - lastQueue.startTime);
+        const timeDelta = Math.max(timeLeftInQueue, 0);
         const newQueue = new Queue(timeDelta + timeoutMsConfig);
 
         this.queues.push(newQueue);
