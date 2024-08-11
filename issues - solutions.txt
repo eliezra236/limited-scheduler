@@ -7,4 +7,13 @@ Options 2:
 Calculate based on new field value of when it started.
 
 Why options 2:
-To not be dependent on the previous queue, for it to be cleaned up when it finishes.
+To not be dependent on the previous queue, for it to be cleaned up when it finishes, and to not create ricorsive loop that may cause memory leak.
+
+
+Problem:
+How to delete queues so the array won't grow infinitely?
+
+Solution:
+Add wrapper to the promises, to know when they're all resolved.
+
+
