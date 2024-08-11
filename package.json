@@ -12,8 +12,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "limited-scheduler": "file:",
-    "taskschedule": "file:",
     "typescript": "^5.5.4"
   },
   "devDependencies": {
