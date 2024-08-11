@@ -1,12 +1,30 @@
 import { setTimeout } from 'node:timers/promises';
 
-interface Queue {
+const timeoutMsConfig = process.env.TIMEOUT ? parseInt(process.env.TIMEOUT) : 1000;
+
+// TODO: Cleanup queues that are done. - maybe make Queue it's own class.
+
+class Queue {
     tasks: Array<() => any>;
     timeout: Promise<void>;
     startTime: number;
+
+    constructor(timeoutMs: number) {
+        this.tasks = [];
+        this.timeout = setTimeout(timeoutMs);
+        this.startTime = Date.now();
+    }
+
+    async add(task: () => any) {
+        const timeoutTask = async () => {
+            await this.timeout;
+            return task();
+        }
+        this.tasks.push(timeoutTask);
+        return timeoutTask;
+    }
 }
 
-const timeoutMs = process.env.TIMEOUT ? parseInt(process.env.TIMEOUT) : 1000;
 
 class LimitedScheduler {
     limit: number;
@@ -20,7 +38,8 @@ class LimitedScheduler {
     }
 
     async run(task: () => any) {
-        const x = setTimeout();
+        const queue = this.getQueue();
+
     }
 
     getQueue(): Queue {
@@ -30,21 +49,13 @@ class LimitedScheduler {
         }
         const lastQueue = this.queues.at(-1);
         if (!lastQueue) {
-            const newQueue: Queue = {
-                tasks: [],
-                timeout: setTimeout(timeoutMs),
-                startTime: Date.now(),
-            };
+            const newQueue = new Queue(timeoutMsConfig);
             this.queues.push(newQueue);
             return newQueue;
         }
 
         const timeDelta = Math.max(Date.now() - lastQueue.startTime, 0);
-        const newQueue = {
-            tasks: [],
-            timeout: setTimeout(timeDelta + timeoutMs),
-            startTime: Date.now(),
-        }
+        const newQueue = new Queue(timeDelta + timeoutMsConfig);
 
         this.queues.push(newQueue);
         return newQueue;
