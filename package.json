@@ -1,5 +1,5 @@
 {
-  "name": "taskschedule",
+  "name": "limited-scheduler",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "limited-scheduler": "file:",
     "taskschedule": "file:",
     "typescript": "^5.5.4"
   },
