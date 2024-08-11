@@ -4,7 +4,7 @@ const timeoutMsConfig = process.env.TIMEOUT ? parseInt(process.env.TIMEOUT) : 10
 
 // TODO: Cleanup queues that are done. - maybe make Queue it's own class.
 
-class Queue {
+export class Queue {
     tasks: Array<() => any>;
     timeout: Promise<void>;
     startTime: number;
@@ -15,7 +15,7 @@ class Queue {
         this.startTime = Date.now();
     }
 
-    async add(task: () => any) {
+    async add<T>(task: () => T) {
         const timeoutTask = async () => {
             await this.timeout;
             return task();
@@ -26,7 +26,7 @@ class Queue {
 }
 
 
-class LimitedScheduler {
+export class LimitedScheduler {
     limit: number;
     queues: Queue[] = [];
 
