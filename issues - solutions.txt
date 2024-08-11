@@ -1,0 +1,9 @@
+How to start the next queue?
+Options 1:
+Wait for the previous timeout
+
+Options 2:
+Calculate based on new field value of when it started.
+
+Why options 2:
+To not be dependent on the previous queue, for it to be cleaned up when it finishes.

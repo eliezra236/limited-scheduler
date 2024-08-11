@@ -18,10 +18,12 @@ export class Queue {
     async add<T>(task: () => T) {
         const timeoutTask = async () => {
             await this.timeout;
-            return task();
+            const taskRes = await task();
+            return taskRes;
         }
         this.tasks.push(timeoutTask);
-        return timeoutTask;
+        const res = await timeoutTask();
+        return res;
     }
 }
 
