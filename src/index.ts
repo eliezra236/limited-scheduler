@@ -37,9 +37,9 @@ class LimitedScheduler {
         this.limit = limit;
     }
 
-    async run(task: () => any) {
+    async run<T>(task: () => T) {
         const queue = this.getQueue();
-
+        return queue.add(task);
     }
 
     getQueue(): Queue {
