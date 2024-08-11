@@ -12,6 +12,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "taskschedule": "file:",
     "typescript": "^5.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.2.0"
   }
 }
