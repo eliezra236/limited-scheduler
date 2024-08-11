@@ -35,5 +35,6 @@ console.log('res', {
     z2,
     timeXTook: endX - startX,
     timeYTook: endY - endX,
-    timeZTook: endZ - endY
+    timeZTook: endZ - endY,
+    totalTimeZTook: endZ - startX
 });

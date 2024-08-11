@@ -2,28 +2,61 @@ import { setTimeout } from 'node:timers/promises';
 
 const timeoutMsConfig = process.env.TIMEOUT ? parseInt(process.env.TIMEOUT) : 1000;
 
-// TODO: Cleanup queues that are done. - maybe make Queue it's own class.
+export class PromiseWithStatus<T> {
+    status: 'pending' | 'fulfilled' | 'rejected';
+    promise: () => Promise<T>;
+
+    constructor(promise: () => Promise<T>) {
+        this.status = 'pending';
+        this.promise = promise;
+    }
+
+    async run() {
+        try {
+            const res = await this.promise();
+            this.status = 'fulfilled';
+            return res;
+        } catch (error) {
+            this.status = 'rejected';
+            throw error;
+        }
+    }
+}
 
 export class Queue {
-    tasks: Array<() => any>;
+    tasks: PromiseWithStatus<any>[];
     timeout: Promise<void>;
     startTime: number;
+    timeoutMs: number;
 
     constructor(timeoutMs: number) {
+        this.timeoutMs = timeoutMs;
         this.tasks = [];
         this.timeout = setTimeout(timeoutMs);
         this.startTime = Date.now();
     }
 
     async add<T>(task: () => T) {
-        const timeoutTask = async () => {
+        const promiseWithStatus = new PromiseWithStatus(async () => {
             await this.timeout;
             const taskRes = await task();
             return taskRes;
+        });
+        const taskPromise = promiseWithStatus.run();
+        this.tasks.push(promiseWithStatus);
+        return taskPromise;
+    }
+
+    isSettled() {
+        if (this.tasks.length === 0) {
+            return true;
         }
-        this.tasks.push(timeoutTask);
-        const res = await timeoutTask();
-        return res;
+        const now = Date.now();
+        const timeLeftInTimeout = this.timeoutMs - (now - this.startTime);
+        if (timeLeftInTimeout > 0) {
+            return false;
+        }
+        return this.tasks.every((task) => task.status !== 'pending');
     }
 }
 
@@ -50,7 +83,7 @@ export class LimitedScheduler {
             return queue;
         }
         const lastQueue = this.queues.at(-1);
-        if (!lastQueue) {
+        if (!lastQueue || lastQueue.isSettled()) {
             const newQueue = new Queue(timeoutMsConfig);
             this.queues.push(newQueue);
             return newQueue;
