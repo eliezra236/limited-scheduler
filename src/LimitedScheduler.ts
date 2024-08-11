@@ -18,11 +18,16 @@ export class LimitedScheduler {
         return queue.add(task);
     }
 
-    getQueue(): Queue {
+    private cleanFinishedQueues() {
+        this.queues = this.queues.filter((q) => !q.isSettled());
+    }
+
+    private getQueue(): Queue {
         const queue = this.queues.find((q) => q.tasks.length < this.limit);
         if (queue) {
             return queue;
         }
+        this.cleanFinishedQueues();
         const lastQueue = this.queues.at(-1);
         if (!lastQueue) {
             const newQueue = new Queue(timeoutMsConfig);
