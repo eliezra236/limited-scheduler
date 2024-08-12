@@ -19,7 +19,7 @@ export class LimitedScheduler {
     }
 
     private cleanFinishedQueues() {
-        this.queues = this.queues.filter((q) => !q.isSettled());
+        this.queues = this.queues.filter((q, i) => !q.isSettled() || i === this.queues.length - 1);
     }
 
     private getQueue(): Queue {
@@ -30,7 +30,7 @@ export class LimitedScheduler {
         this.cleanFinishedQueues();
         const lastQueue = this.queues.at(-1);
         if (!lastQueue) {
-            const newQueue = new Queue(timeoutMsConfig);
+            const newQueue = new Queue(0);
             this.queues.push(newQueue);
             return newQueue;
         }
