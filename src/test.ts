@@ -1,4 +1,5 @@
 import {Queue, LimitedScheduler} from './index.js';
+import {LimitedSchedulerByDone} from './LimitedSchedulerByDone.js';
 
 async function mathAdd(a: number, b: number) {
     return a + b;
@@ -19,7 +20,7 @@ async function mathAdd(a: number, b: number) {
 //     timeYTook: end - timeYStarts
 // });
 
-const scheduler = new LimitedScheduler(2);
+const scheduler = new LimitedSchedulerByDone(2);
 
 const startX = Date.now();
 const x2 = await scheduler.run(() => mathAdd(1, 2));
