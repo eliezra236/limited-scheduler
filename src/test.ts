@@ -1,5 +1,6 @@
 import {Queue, LimitedScheduler} from './index.js';
 import {LimitedSchedulerByDone} from './LimitedSchedulerByDone.js';
+import { setTimeout } from 'node:timers/promises';
 
 async function mathAdd(a: number, b: number) {
     return a + b;
@@ -25,7 +26,7 @@ const scheduler = new LimitedSchedulerByDone(2);
 const startX = Date.now();
 const x2 = await scheduler.run(() => mathAdd(1, 2));
 const endX = Date.now();
-const y2 = await scheduler.run(() => mathAdd(3, 4));
+const y2 = await scheduler.run(() => setTimeout(3000));
 const endY = Date.now();
 const z2 = await scheduler.run(() => mathAdd(5, 6));
 const endZ = Date.now();

@@ -8,12 +8,14 @@ export class LimitedSchedulerByDone {
     tasks: Promise<any>[] = []
     cleared: boolean = false;
     timeout: Promise<void> | null = null;
+    waitUntilResolved: boolean;
 
-    constructor(limit: number) {
+    constructor(limit: number, waitUntilResolved: boolean = true) {
         if (limit <= 0 || limit > 100) {
             throw Error('Limit must be between 1 and 100');
         }
         this.limit = limit;
+        this.waitUntilResolved = waitUntilResolved;
     }
 
     async run<T>(task: () => T): Promise<T> {
@@ -23,7 +25,9 @@ export class LimitedSchedulerByDone {
             this.tasks.push(promise);
             return promise;
         }
-        await Promise.allSettled(this.tasks);
+        if (this.waitUntilResolved) {
+            await Promise.allSettled(this.tasks);
+        }
         if (!this.cleared) {
             this.tasks = [];
             this.cleared = true;
