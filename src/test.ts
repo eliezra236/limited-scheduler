@@ -21,15 +21,18 @@ async function mathAdd(a: number, b: number) {
 //     timeYTook: end - timeYStarts
 // });
 
-const scheduler = new LimitedSchedulerByDone(2);
+const scheduler = new LimitedSchedulerByDone(2, false);
 
 const startX = Date.now();
-const x2 = await scheduler.run(() => mathAdd(1, 2));
+const x2 = scheduler.run(() => mathAdd(1, 2));
 const endX = Date.now();
-const y2 = await scheduler.run(() => setTimeout(3000));
+const y2 = scheduler.run(() => setTimeout(3000));
 const endY = Date.now();
-const z2 = await scheduler.run(() => mathAdd(5, 6));
+const z2 = scheduler.run(() => mathAdd(5, 6));
 const endZ = Date.now();
+
+await Promise.all([x2, y2, z2]);
+const end = Date.now();
 
 console.log('res', {
     x2,
@@ -38,5 +41,6 @@ console.log('res', {
     timeXTook: endX - startX,
     timeYTook: endY - endX,
     timeZTook: endZ - endY,
-    totalTimeZTook: endZ - startX
+    totalTimeZTook: endZ - startX,
+    totalTimeTook: end - startX
 });
